@@ -1463,6 +1463,7 @@ static void report_key_value(struct extcon_dev_data *chip)
 {
 	if (chip->position == DOWN_STATE) {
 		chip->state = 3;
+		input_event(chip->input_dev, EV_MSC, MSC_SCAN, 3);
 		input_report_key(chip->input_dev, KEY_F3, 3);
 		input_sync(chip->input_dev);
 		input_report_key(chip->input_dev, KEY_F3, 0);
@@ -1470,6 +1471,7 @@ static void report_key_value(struct extcon_dev_data *chip)
 		TRI_KEY_LOG("tri_key: report down key successful!\n");
 	} else if (chip->position == UP_STATE) {
 		chip->state = 1;
+		input_event(chip->input_dev, EV_MSC, MSC_SCAN, 1);
 		TRI_KEY_LOG("tri_key: report up key successful!\n");
 		input_report_key(chip->input_dev, KEY_F3, 1);
 		input_sync(chip->input_dev);
@@ -1477,6 +1479,7 @@ static void report_key_value(struct extcon_dev_data *chip)
 		input_sync(chip->input_dev);
 	} else if (chip->position == MID_STATE) {
 		chip->state = 2;
+		input_event(chip->input_dev, EV_MSC, MSC_SCAN, 2);
 		TRI_KEY_LOG("tri_key: report mid key successful!\n");
 		input_report_key(chip->input_dev, KEY_F3, 2);
 		input_sync(chip->input_dev);
@@ -2976,6 +2979,8 @@ static void register_tri_key_dev_work(struct work_struct *work)
 
 	set_bit(EV_SYN, chip->input_dev->evbit);
 	set_bit(EV_KEY, chip->input_dev->evbit);
+	set_bit(EV_MSC, chip->input_dev->evbit);
+	set_bit(MSC_SCAN, chip->input_dev->mscbit);
 	set_bit(KEY_F3, chip->input_dev->keybit);
 	res = input_register_device(chip->input_dev);
 	if (res) {
